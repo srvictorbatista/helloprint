@@ -25,7 +25,7 @@ console.log(usuario['nome'], usuario['num'], " - ", usuario['key'], usuario['jid
 const TARGET = "REF-";
 const DELAY_SECONDS = 30;
 const STABILITY_MS = 500;
-const AGUARDANDO_PEDIDOS = " HELLO PRINT: AGUARDANDO PEDIDOS ";
+const AGUARDANDO_PEDIDOS = " HELLO PRINT: PRONTO, AGUARDANDO PEDIDOS ";
 const PRINT_POS = "";
 
 /* Conteúdo e elementos indesejados */
@@ -545,6 +545,7 @@ setTimeout(()=>{
 
 
 })();
+
 
 
 
