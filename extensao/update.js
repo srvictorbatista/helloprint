@@ -1,33 +1,25 @@
 //versão 1.0.0.1620
-console.log("ESP256 - GIT!");
 
-//const usuario={nome:localStorage["2WiRXD/ViPla+Cu9THWG2w=="],jid:localStorage["last-wid-md"],lid:localStorage["WALid"]};
+(()=>{
+"use strict";
+
+console.log("ESP256 - GIT!");
 const usuario = {
-  nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w=="] || "") 					.replace(/['"<>\r\n]/g,""),
-  num:  (localStorage["last-wid-md"] || "")									.split(":")[0].replace(/\D+/g,""),
-  key:  (btoa(unescape(encodeURIComponent(localStorage["WALid"] || ""))) 	.toUpperCase()),
-  jid:  (localStorage["last-wid-md"] || "") 								.replace(/['"<>\r\n]/g,""),
-  lid:  (localStorage["WALid"] || "") 										.replace(/['"<>\r\n]/g,"")
+  nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w=="] || "")                    .replace(/['"<>\r\n]/g,""),
+  num:  (localStorage["last-wid-md"] || "")                                 .split(":")[0].replace(/\D+/g,""),
+  key:  (btoa(unescape(encodeURIComponent(localStorage["WALid"] || "")))    .toUpperCase()),
+  jid:  (localStorage["last-wid-md"] || "")                                 .replace(/['"<>\r\n]/g,""),
+  lid:  (localStorage["WALid"] || "")                                       .replace(/['"<>\r\n]/g,"")
 };
 
-if(!usuario.nome || !usuario.jid || !usuario.lid){  console.warn("Dados do usuário está ausente ou inválido:", usuario); }
+if(!usuario.nome || !usuario.jid || !usuario.lid){  console.warn("Dados do usuário estão ausentes ou inválidos: ", usuario); }
 
 
 console.log(usuario['nome'], usuario['num'], " - ", usuario['key'], usuario['jid'], usuario['lid']);
 
 //console.log(usuario); console.log(JSON.stringify(usuario));
 //console.log('//////////////'); console.log(usuario); console.log(JSON.stringify(usuario));
-/*
-console.log(
-    window.localStorage['2WiRXD/ViPla+Cu9THWG2w=='],
-    window.localStorage['last-wid-md'],
-    window.localStorage['WALid']
-);
-/**/
 
-
-(()=>{
-"use strict";
 
 /* ========== CONFIGURAÇÃO ========== */
 const TARGET = "REF-";
@@ -144,6 +136,7 @@ function writeAguardandoStyled(){
     console.info("%cVerifique se HELLO-PRINT SERVER está ativo e se há uma IMPRESSORA POS compartilhada",
       "font-size:20px;color:#FFFFFF;background:#BF0202;font-weight:bold;padding:4px 8px;border-radius:4px;","\n\n\n");
   }else{
+    console.log(usuario['nome']+':', usuario['num'], " - ", usuario['key']);
     console.log("Seus pedidos serão impressos em: " + (firstPrint || PRINT_POS));
     console.log("%c" + AGUARDANDO_PEDIDOS, style);
     aguardandoMensagemEscrita = true;
