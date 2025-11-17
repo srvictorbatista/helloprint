@@ -1,5 +1,5 @@
 //versão 1.0.0.1620
-console.log("ESP256 - ok!");
+console.log("ESP256 - GIT!");
 (()=>{
 "use strict";
 
@@ -526,4 +526,5 @@ setTimeout(()=>{
 
 
 })();
+
 
