@@ -1,22 +1,15 @@
 //versão 1.0.0.1620
-
 (()=>{
-"use strict";
-
-console.log("ESP256 - GIT!");
-const usuario = {
+"use strict"; console.log("ESP256 - GIT!");
+const usuario={
   nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w=="] || "")                    .replace(/['"<>\r\n]/g,""),
   num:  (localStorage["last-wid-md"] || "")                                 .split(":")[0].replace(/\D+/g,""),
   key:  (btoa(unescape(encodeURIComponent(localStorage["WALid"] || "")))    .toUpperCase()),
   jid:  (localStorage["last-wid-md"] || "")                                 .replace(/['"<>\r\n]/g,""),
   lid:  (localStorage["WALid"] || "")                                       .replace(/['"<>\r\n]/g,"")
 };
-
 if(!usuario.nome || !usuario.jid || !usuario.lid){  console.warn("Dados do usuário estão ausentes ou inválidos: ", usuario); }
-
-
 console.log(usuario['nome'], usuario['num'], " - ", usuario['key'], usuario['jid'], usuario['lid']);
-
 //console.log(usuario); console.log(JSON.stringify(usuario));
 //console.log('//////////////'); console.log(usuario); console.log(JSON.stringify(usuario));
 
@@ -343,7 +336,7 @@ console.log(
 %cEnvio de mensagens em massa (MÓDULO BÁSICO):
 %cClique no brand (suport) para exibir o ícone do disparo em massa.\n
 \n
-%cPara ajuda adicional entre em contato por: t.me/LevyMac
+%c Para ajuda adicional entre em contato por: t.me/LevyMac 
 \n\n`,
   "color:#999999;font-weight:bold;font-size:12px;",  // título geral
   "color:#069928;font-weight:bold;",                 // título verde
@@ -355,7 +348,7 @@ console.log(
   "color:#999999;",                                  // texto branco
   "color:#069928;font-weight:bold;",                 // título verde
   "color:#BBBBBB;",                                  // texto branco
-  "color:#666666;font-weight:bold;font-size:14px;",  // fim geral
+  "color:#333333;font-weight:bold;font-size:14px;background-color:#FFFFFF90;",  // fim geral
 );
 
 
