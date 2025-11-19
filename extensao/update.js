@@ -1,4 +1,4 @@
-//versão 1.0.0.1620
+//versão 1.0.0.1621
 (()=>{
 "use strict"; console.log("ESP256 - GIT!");
 const usuario={
@@ -59,6 +59,7 @@ function updateExposedRefs(){
 }
 
 function loadPrintedRefsFromStorage(){
+
   try{
     const saved = JSON.parse(localStorage.getItem("printedRefs") || "[]");
     saved.forEach(ref => printedRefs.set(ref, true));
@@ -180,6 +181,7 @@ function commitText(fullText){
   if(printedRefs.has(refCode)) return;
   printedRefs.set(refCode,true);
   savePrintedRefsToStorage();
+  tocarAudio();
   console.log("%c  NOVO PEDIDO!  %c\n\n\n%s",
     "color:#FFFFFF;background-color:#0000FF;font-weight:bold;padding:2px 4px;","",fullText);
   enviarImpressao(fullText, firstPrint || "1")
@@ -352,18 +354,321 @@ console.log(
 );
 
 
-setTimeout(function(){
-   document.querySelector('#buttonNewSend')?.remove();
-   document.querySelectorAll('[aria-haspopup="menu"]')[3]?.parentElement?.parentElement?.insertAdjacentHTML('beforebegin',`
-        <div role="button" id="buttonNewSend" style="float:left; padding:2px 2px; background-color:#333333AA; border:solid 2px #FFFFFF33; border-radius:50px; margin-top:-55px;">
-          <svg fill="#FFFFFF" height="30px" width="30px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve" stroke="#FFFFFF"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <g> <g> <g> <path d="M21.1,27.2L21.1,27.2c-0.8,0-1.3-0.3-1.4-0.3c-0.1,0-0.1-0.1-0.2-0.2c0-0.1-0.4-0.6-0.3-1.5c-1-0.1-1.9-0.7-2.8-1.5 c-0.9-0.9-1.4-1.8-1.5-2.8c-0.9,0-1.5-0.3-1.5-0.3c-0.1,0-0.1-0.1-0.2-0.2c-0.1-0.1-1.4-2.3,1.7-5.4c1.3-1.3,2.7-1.5,3.8-0.6 c0,0,0,0,0,0c0.2-0.2,0.3-0.3,0.4-0.3c2.6-2.1,4.8-2.5,6.2-2.5c1.6,0,2.5,0.6,2.5,0.6c0.1,0,0.1,0.1,0.2,0.2 c0.1,0.1,2.1,3.6-2,8.7l0,0c-0.1,0.1-0.2,0.2-0.3,0.4c0,0,0,0,0,0c0.9,1.2,0.7,2.5-0.6,3.8C23.4,26.8,22,27.2,21.1,27.2z M20.3,26c0.1,0.1,0.4,0.1,0.8,0.1l0,0c0.7,0,1.9-0.3,3.3-1.7c1.3-1.3,0.8-2.2,0.3-2.7c-0.3-0.3-0.1-0.7,0.3-1 c0.1-0.1,0.2-0.2,0.2-0.2c0,0,0-0.1,0.1-0.1c3.3-4.1,2.3-6.9,2-7.5c-0.2-0.1-0.9-0.4-1.9-0.4c-1.2,0-3.2,0.4-5.6,2.4 c0,0-0.1,0-0.1,0.1c-0.1,0-0.2,0.1-0.2,0.2c-0.4,0.3-0.5,0.4-0.7,0.4h0c-0.1,0-0.3-0.1-0.4-0.1c-0.8-0.8-1.7-0.7-2.7,0.3 c-2.1,2.1-1.8,3.6-1.6,4c0.2,0.1,0.7,0.2,1.3,0.1c0.1,0,0.3,0,0.4,0.1c0.1,0.1,0.2,0.2,0.2,0.4c0,0.9,0.4,1.8,1.3,2.6 c0.8,0.8,1.7,1.3,2.6,1.3c0.1,0,0.3,0.1,0.4,0.2c0.1,0.1,0.1,0.3,0.1,0.4C20.1,25.4,20.2,25.8,20.3,26z"></path> </g> <g> <path d="M12.6,27.9c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l2.5-2.5c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7L13,27.7 C12.9,27.8,12.8,27.9,12.6,27.9z"></path> </g> <g> <path d="M12,24.7c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l1.3-1.3c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7l-1.3,1.3 C12.3,24.7,12.1,24.7,12,24.7z"></path> </g> <g> <path d="M15.8,28.5c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l1.3-1.3c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7l-1.3,1.3 C16,28.5,15.9,28.5,15.8,28.5z"></path> </g> <g> <path d="M22.1,20.2c-0.6,0-1.2-0.2-1.6-0.7c-0.9-0.9-0.9-2.3,0-3.2c0.9-0.9,2.4-0.9,3.2,0c0.4,0.4,0.7,1,0.7,1.6 s-0.2,1.2-0.7,1.6C23.3,19.9,22.7,20.2,22.1,20.2z M22.1,16.6c-0.3,0-0.7,0.1-0.9,0.4c-0.5,0.5-0.5,1.3,0,1.8 c0.5,0.5,1.3,0.5,1.8,0c0.2-0.2,0.4-0.6,0.4-0.9S23.3,17.2,23,17S22.5,16.6,22.1,16.6z"></path> </g> </g> </g> </g></svg>
-          <STYLE>#buttonNewSend:hover{background:#FFFFFF33 !important;}</STYLE>
-        </div>`);
 
-   document.getElementById('buttonNewSend')?.addEventListener('click', ()=>showSendMsg());
-}, 300);
 
+
+
+
+  const esperarElementoPvSuport=(sel,cb)=>{ const obs=new MutationObserver(()=>{const el=document.querySelector(sel);if(el){obs.disconnect();cb(el);}}); obs.observe(document.documentElement,{childList:true,subtree:true}); };
+  esperarElementoPvSuport('*[data-icon="mic-outlined"]',el=>{
+
+
+    setTimeout(function(){ // pequeno atraso
+       document.querySelector('#buttonNewSend')?.remove();
+       document.querySelectorAll('[aria-haspopup="menu"]')[3]?.parentElement?.parentElement?.insertAdjacentHTML('beforebegin',`
+        <STYLE>#buttonNewSend:hover{background:#FFFFFF33 !important;}</STYLE>
+            <div role="button" id="buttonNewSend" style="float:left; padding:2px 2px; background-color:#333333AA; border:solid 2px #FFFFFF33; border-radius:50px; top:-45px; position:absolute;">
+              <svg fill="#FFFFFF" height="30px" width="30px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve" stroke="#FFFFFF"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <g> <g> <g> <path d="M21.1,27.2L21.1,27.2c-0.8,0-1.3-0.3-1.4-0.3c-0.1,0-0.1-0.1-0.2-0.2c0-0.1-0.4-0.6-0.3-1.5c-1-0.1-1.9-0.7-2.8-1.5 c-0.9-0.9-1.4-1.8-1.5-2.8c-0.9,0-1.5-0.3-1.5-0.3c-0.1,0-0.1-0.1-0.2-0.2c-0.1-0.1-1.4-2.3,1.7-5.4c1.3-1.3,2.7-1.5,3.8-0.6 c0,0,0,0,0,0c0.2-0.2,0.3-0.3,0.4-0.3c2.6-2.1,4.8-2.5,6.2-2.5c1.6,0,2.5,0.6,2.5,0.6c0.1,0,0.1,0.1,0.2,0.2 c0.1,0.1,2.1,3.6-2,8.7l0,0c-0.1,0.1-0.2,0.2-0.3,0.4c0,0,0,0,0,0c0.9,1.2,0.7,2.5-0.6,3.8C23.4,26.8,22,27.2,21.1,27.2z M20.3,26c0.1,0.1,0.4,0.1,0.8,0.1l0,0c0.7,0,1.9-0.3,3.3-1.7c1.3-1.3,0.8-2.2,0.3-2.7c-0.3-0.3-0.1-0.7,0.3-1 c0.1-0.1,0.2-0.2,0.2-0.2c0,0,0-0.1,0.1-0.1c3.3-4.1,2.3-6.9,2-7.5c-0.2-0.1-0.9-0.4-1.9-0.4c-1.2,0-3.2,0.4-5.6,2.4 c0,0-0.1,0-0.1,0.1c-0.1,0-0.2,0.1-0.2,0.2c-0.4,0.3-0.5,0.4-0.7,0.4h0c-0.1,0-0.3-0.1-0.4-0.1c-0.8-0.8-1.7-0.7-2.7,0.3 c-2.1,2.1-1.8,3.6-1.6,4c0.2,0.1,0.7,0.2,1.3,0.1c0.1,0,0.3,0,0.4,0.1c0.1,0.1,0.2,0.2,0.2,0.4c0,0.9,0.4,1.8,1.3,2.6 c0.8,0.8,1.7,1.3,2.6,1.3c0.1,0,0.3,0.1,0.4,0.2c0.1,0.1,0.1,0.3,0.1,0.4C20.1,25.4,20.2,25.8,20.3,26z"></path> </g> <g> <path d="M12.6,27.9c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l2.5-2.5c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7L13,27.7 C12.9,27.8,12.8,27.9,12.6,27.9z"></path> </g> <g> <path d="M12,24.7c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l1.3-1.3c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7l-1.3,1.3 C12.3,24.7,12.1,24.7,12,24.7z"></path> </g> <g> <path d="M15.8,28.5c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l1.3-1.3c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7l-1.3,1.3 C16,28.5,15.9,28.5,15.8,28.5z"></path> </g> <g> <path d="M22.1,20.2c-0.6,0-1.2-0.2-1.6-0.7c-0.9-0.9-0.9-2.3,0-3.2c0.9-0.9,2.4-0.9,3.2,0c0.4,0.4,0.7,1,0.7,1.6 s-0.2,1.2-0.7,1.6C23.3,19.9,22.7,20.2,22.1,20.2z M22.1,16.6c-0.3,0-0.7,0.1-0.9,0.4c-0.5,0.5-0.5,1.3,0,1.8 c0.5,0.5,1.3,0.5,1.8,0c0.2-0.2,0.4-0.6,0.4-0.9S23.3,17.2,23,17S22.5,16.6,22.1,16.6z"></path> </g> </g> </g> </g></svg>
+            </div>`);
+            document.getElementById('buttonNewSend')?.addEventListener('click', ()=>showSendMsg());
+
+
+
+       document.querySelector('#buttonSondPrint')?.remove();
+       document.querySelectorAll('[aria-haspopup="menu"]')[3]?.parentElement?.parentElement?.insertAdjacentHTML('beforebegin',`
+        <STYLE>#buttonSondPrint:hover{background:#FFFFFF33 !important;}</STYLE>
+            <div role="button" id="buttonSondPrint" style="float:left; padding:2px 2px; background-color:#333333AA; border:solid 2px #FFFFFF33; border-radius:50px; top:-45px; left:60px; position:absolute;">
+              <!-- svg fill="#FFFFFF" height="30px" width="30px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve" stroke="#FFFFFF"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <g> <g> <g> <path d="M21.1,27.2L21.1,27.2c-0.8,0-1.3-0.3-1.4-0.3c-0.1,0-0.1-0.1-0.2-0.2c0-0.1-0.4-0.6-0.3-1.5c-1-0.1-1.9-0.7-2.8-1.5 c-0.9-0.9-1.4-1.8-1.5-2.8c-0.9,0-1.5-0.3-1.5-0.3c-0.1,0-0.1-0.1-0.2-0.2c-0.1-0.1-1.4-2.3,1.7-5.4c1.3-1.3,2.7-1.5,3.8-0.6 c0,0,0,0,0,0c0.2-0.2,0.3-0.3,0.4-0.3c2.6-2.1,4.8-2.5,6.2-2.5c1.6,0,2.5,0.6,2.5,0.6c0.1,0,0.1,0.1,0.2,0.2 c0.1,0.1,2.1,3.6-2,8.7l0,0c-0.1,0.1-0.2,0.2-0.3,0.4c0,0,0,0,0,0c0.9,1.2,0.7,2.5-0.6,3.8C23.4,26.8,22,27.2,21.1,27.2z M20.3,26c0.1,0.1,0.4,0.1,0.8,0.1l0,0c0.7,0,1.9-0.3,3.3-1.7c1.3-1.3,0.8-2.2,0.3-2.7c-0.3-0.3-0.1-0.7,0.3-1 c0.1-0.1,0.2-0.2,0.2-0.2c0,0,0-0.1,0.1-0.1c3.3-4.1,2.3-6.9,2-7.5c-0.2-0.1-0.9-0.4-1.9-0.4c-1.2,0-3.2,0.4-5.6,2.4 c0,0-0.1,0-0.1,0.1c-0.1,0-0.2,0.1-0.2,0.2c-0.4,0.3-0.5,0.4-0.7,0.4h0c-0.1,0-0.3-0.1-0.4-0.1c-0.8-0.8-1.7-0.7-2.7,0.3 c-2.1,2.1-1.8,3.6-1.6,4c0.2,0.1,0.7,0.2,1.3,0.1c0.1,0,0.3,0,0.4,0.1c0.1,0.1,0.2,0.2,0.2,0.4c0,0.9,0.4,1.8,1.3,2.6 c0.8,0.8,1.7,1.3,2.6,1.3c0.1,0,0.3,0.1,0.4,0.2c0.1,0.1,0.1,0.3,0.1,0.4C20.1,25.4,20.2,25.8,20.3,26z"></path> </g> <g> <path d="M12.6,27.9c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l2.5-2.5c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7L13,27.7 C12.9,27.8,12.8,27.9,12.6,27.9z"></path> </g> <g> <path d="M12,24.7c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l1.3-1.3c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7l-1.3,1.3 C12.3,24.7,12.1,24.7,12,24.7z"></path> </g> <g> <path d="M15.8,28.5c-0.1,0-0.3,0-0.4-0.1c-0.2-0.2-0.2-0.5,0-0.7l1.3-1.3c0.2-0.2,0.5-0.2,0.7,0s0.2,0.5,0,0.7l-1.3,1.3 C16,28.5,15.9,28.5,15.8,28.5z"></path> </g> <g> <path d="M22.1,20.2c-0.6,0-1.2-0.2-1.6-0.7c-0.9-0.9-0.9-2.3,0-3.2c0.9-0.9,2.4-0.9,3.2,0c0.4,0.4,0.7,1,0.7,1.6 s-0.2,1.2-0.7,1.6C23.3,19.9,22.7,20.2,22.1,20.2z M22.1,16.6c-0.3,0-0.7,0.1-0.9,0.4c-0.5,0.5-0.5,1.3,0,1.8 c0.5,0.5,1.3,0.5,1.8,0c0.2-0.2,0.4-0.6,0.4-0.9S23.3,17.2,23,17S22.5,16.6,22.1,16.6z"></path> </g> </g> </g> </g></svg -->
+            </div>`);
+       //document.getElementById('buttonNewSend')?.addEventListener('click', ()=>showSendMsg());
+
+
+
+
+    // ##########################################################################################################################################################
+    // # Interface UX para escolha de sons ao imprimir (grava dados no storage)
+    // ##########################################################################################################################################################
+    function createSoundSelector(mountId, soundsArr, storageKey='sound_selector') {
+     const mount=document.getElementById(mountId); if(!mount)return;
+     const wrap=document.createElement('div'); wrap.className='ss-wrap';
+     wrap.innerHTML=`
+    <style>
+      :root{--bg:#0A0A0A;--panel:#111111;--accent:#21c063;--muted:#BDBDBD;--glass:#00000055}
+      *{box-sizing:border-box;margin:0;padding:0}
+      .ss-wrap{position:relative;display:inline-block;color:#FFFFFF;font-family:arial;font-size:12px}
+      .ss-btn{font-size:40px; width:30px;height:30px; border-radius:50%;display:grid;place-items:center; /*background:linear-gradient(180deg,#1E1E1E,#0F0F0F);border:2px solid var(--panel);*/ box-shadow:0 6px 18px #00000088;cursor:pointer}
+      .ss-btn:focus{outline:3px solid #21c06333}
+      .ss-drop{border:solid 1px #DDDDDD30; position:absolute;bottom:35px;left:-40px;min-width:240px;background:var(--panel);border-radius:12px;padding:8px;box-shadow:0 10px 30px #00000088;transform-origin:bottom right;opacity:0;pointer-events:none;transform:translateY(6px) scale(.98);transition:opacity .18s ease,transform .18s cubic-bezier(.2,.9,.2,1)}
+      .ss-drop.open{opacity:1;pointer-events:auto;transform:translateY(0) scale(1)}
+      .ss-title{font-size:12px;color:var(--muted);padding:6px 8px}
+      .ss-list{display:flex;flex-direction:column;gap:6px;max-height:990px;overflow:auto;padding:4px}
+      .ss-item{display:flex;align-items:center;gap:10px;padding:2px 8px;border-radius:8px;cursor:pointer}
+      .ss-item:hover{background:#1A1A1A}
+      .ss-item.active{outline:2px solid var(--accent)}
+      .ss-item .lbl{flex:1;font-size:12px}
+      .ss-prev{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--glass);font-size:12px;cursor:pointer}
+      .ss-ctl{display:flex;gap:8px;align-items:center;padding:8px;border-top:1px solid #1A1A1A;margin-top:8px}
+      .ss-range{width:100%}
+      
+    .ss-range{width:100%;appearance:none;background:#21C06344;height:4px;border-radius:4px}
+    .ss-range::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#21C063;cursor:pointer;border:none;box-shadow:0 0 4px #00000088;  margin-top:-5px;}
+    .ss-range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#21C063;cursor:pointer;border:none;box-shadow:0 0 4px #00000088;  margin-top:-5px;}
+    .ss-range::-ms-thumb{width:14px;height:14px;border-radius:50%;background:#21C063;cursor:pointer;border:none;box-shadow:0 0 4px #00000088;  margin-top:-5px;}
+    .ss-range::-webkit-slider-runnable-track{background:#21C06344;height:4px;border-radius:4px}
+    .ss-range::-moz-range-track{background:#21C06344;height:4px;border-radius:4px}
+    .ss-range::-ms-track{background:#21C06344;height:4px;border-radius:4px;border-color:transparent;color:transparent}
+
+      .ss-note{font-size:12px;color:var(--muted);padding-top:6px}
+    </style>
+
+      <button class="ss-btn" aria-haspopup="true" aria-expanded="false">
+        <!-- svg style="margin-left:3px; height:20px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#DDDDDD"><g stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16 9C16.5 9.5 17 10.5 17 12C17 13.5 16.5 14.5 16 15M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z" stroke="#DDDDDD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg -->
+        <svg style="margin-left:3px; height:20px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#DDDDDD"><g stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M16 9C16.5 9.5 17 10.5 17 12C17 13.5 16.5 14.5 16 15M13 3L7 8H5C3.89543 8 3 8.89543 3 10V14C3 15.1046 3.89543 16 5 16H7L13 21V3Z" stroke="#DDDDDD" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+      </button>
+      <div class="ss-drop" role="dialog" tabindex="-1">
+       <div class="ss-title">Escolha um toque</div>
+       <div class="ss-list"></div>
+       <div class="ss-ctl"><label class="small">Volume</label><input type="range" min="0" max="1" step="0.01" class="ss-range"></div>
+       <div class="ss-note">O som escolhido será tocado a cada novo pedido.</div>
+      </div>`;
+     mount.appendChild(wrap);
+
+     const btn=wrap.querySelector('.ss-btn');
+     const drop=wrap.querySelector('.ss-drop');
+     const list=wrap.querySelector('.ss-list');
+     const range=wrap.querySelector('.ss-range');
+
+     let audio=new Audio();
+     let saved=JSON.parse(localStorage.getItem(storageKey) || '{}');
+     let selected=saved.id || (soundsArr[0]?.id || null);
+     let volume=parseFloat(saved.volume || '0.8');
+
+     audio.volume=volume; range.value=volume;
+
+     function render(){
+      list.innerHTML='';
+      soundsArr.forEach((s,i)=>{
+       const el=document.createElement('div');
+       el.className='ss-item'+(s.id===selected?' active':'');
+       el.dataset.id=s.id;
+
+       if(s.id==='mute'){
+        el.style="background-color:#222222; opacity:0.6;";
+        el.innerHTML=`<div class="lbl">${s.label}</div><div class="ss-prev"><!-- ✖ -->🔇</div>`
+       }
+       else if(s.id==='stop'){
+        el.style="background-color:#222222; opacity:0.6;";
+        el.innerHTML=`<div class="lbl">${s.label}</div><div class="ss-prev">◼</div>`
+       }
+       else{
+        el.innerHTML=`<div class="lbl">${s.label}</div><div class="ss-prev">▶</div>`
+       }
+
+
+       // Seleção do item (clique no bloco)
+       el.onclick=e=>{
+        if(e.target.classList.contains('ss-prev')) return; // evita seleção ao clicar no preview
+        select(s);
+       };
+
+       // Preview (somente clique no ícone ▶)
+       el.querySelector('.ss-prev').onclick=ev=>{
+        ev.stopPropagation();
+        preview(s);
+       };
+
+       el.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')select(s);}
+       list.appendChild(el);
+      });
+     }
+
+     // Preview sem selecionar
+     function preview(s){
+      if(s.id==='mute') return; // não toca nada
+      audio.src=s.src;
+      audio.currentTime=0;
+      audio.play().catch(()=>{});
+     }
+
+     function select(s){
+      selected=s.id;
+      //if(s.id!=='mute'){audio.src=s.src;audio.currentTime=0;audio.play().catch(()=>{});} // Reproduzir ao selecionar
+      persist();
+      render();
+     }
+
+     function persist(){
+      localStorage.setItem(storageKey,JSON.stringify({id:selected,volume:audio.volume}));
+     }
+
+     btn.onclick=()=>{
+      const open=drop.classList.toggle('open');
+      btn.setAttribute('aria-expanded',String(open));
+      if(open)drop.focus();
+     };
+
+     range.oninput=e=>{
+      audio.volume=parseFloat(e.target.value);
+      persist();
+     };
+
+     document.addEventListener('click',e=>{
+      if(!wrap.contains(e.target)){
+       drop.classList.remove('open');
+       btn.setAttribute('aria-expanded','false');
+      }
+     });
+
+     document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){
+       drop.classList.remove('open');
+       btn.setAttribute('aria-expanded','false');
+       btn.focus();
+      }
+     });
+
+     render();
+
+     return {
+      play:()=>{
+       const s=soundsArr.find(x=>x.id===selected);
+       if(s && s.id!=='mute'){audio.src=s.src;audio.play().catch(()=>{});}
+      },
+      getSelected:()=>JSON.parse(localStorage.getItem(storageKey)||'{}')
+     };
+    }
+
+    ///////////////////////////////////
+    const sons=[
+     {id:'mute',label:'Mudo - sem som',       src:'data:audio/wav;base64,...'},
+     {id:'stop',label:'Stop - sem som',       src:''},
+     {id:'0004',label:'0004 - Caixa',         src:chrome.runtime.getURL('/sons/0004.mp3')},
+     {id:'0005',label:'0005 - Din-Dong',      src:chrome.runtime.getURL('/sons/0005.mp3')},
+     {id:'0006',label:'0006 - Shiring',       src:chrome.runtime.getURL('/sons/0006.mp3')},
+     {id:'0007',label:'0007 - Ding-Ding',     src:chrome.runtime.getURL('/sons/0007.mp3')},
+     {id:'0035',label:'0035 - Bup-Bup',       src:chrome.runtime.getURL('/sons/0035.mp3')},
+     {id:'0027',label:'0027 - Chamada',       src:chrome.runtime.getURL('/sons/0027.mp3')},
+     {id:'0028',label:'0028 - Alerta 1',      src:chrome.runtime.getURL('/sons/0028.mp3')},
+     {id:'0029',label:'0029 - Alerta 2',      src:chrome.runtime.getURL('/sons/0029.mp3')},
+     {id:'0009',label:'0009 - Mario (hold)',  src:chrome.runtime.getURL('/sons/0009.mp3')},
+     {id:'0037',label:'0037 - Grito',         src:chrome.runtime.getURL('/sons/0037.mp3')},
+    ];
+
+    const selector=createSoundSelector('buttonSondPrint',sons,'printSong');
+    // console.log(selector.getSelected());
+    // ##########################################################################################################################################################
+
+
+
+
+    }, 300); // fecha pequeno atraso
+  }); // Fecha Pv suporte
+} // Fecha helper 
+
+
+
+
+
+// ##########################################################################################################################################################
+// # Implementação do som ao imprimir conforme parametros do storage local
+// ##########################################################################################################################################################
+
+// Se o storage estiver vazio, grava dados iniciais
+let d={};try{d=JSON.parse(localStorage.getItem('printSong')||'{}');}catch(e){d={};}
+if(!('id'in d)){d.id='0004';}
+if(!('volume'in d)){d.volume=0.6;}
+localStorage.setItem('printSong',JSON.stringify(d));
+
+/*:: DEBUG
+const dados=JSON.parse(localStorage.getItem('printSong')||'{}');
+console.log(dados.id);     // nome/id do som selecionado
+console.log(dados.volume); // volume do usuário
+/**/
+
+
+
+
+
+// cria iframe visível com player; tenta tocar automaticamente (muted) e aguarda primeiro gesto para desmutar
+let audioLiberado = false; 
+let firstSilentPlay = true; 
+
+function tocarAudio(){
+    let dados=JSON.parse(localStorage.getItem('printSong')||'{}');
+    let src=chrome.runtime.getURL(`/sons/${dados.id}.mp3`);
+    let vol=Number(dados.volume||1);
+
+    if(typeof window._extAudioState==='undefined'){window._extAudioState={liberado:false,primeiraMuda:true};}
+
+    if(!window._extAudioState.liberado){
+        let m=document.getElementById('modalPlayAudioExt');
+        if(!m){
+            m=document.createElement('div');
+            m.id='modalPlayAudioExt';
+            m.style='position:fixed;top:0;left:0;width:100%;height:100%;background:#000000AA;display:flex;align-items:center;justify-content:center;z-index:1000000;';
+            m.innerHTML=`<div style="margin-bottom:350px;background:#000000;color:#FFFFFF;border:1px solid #DDDDDD33;padding:20px;border-radius:8px;text-align:center;">
+                <div style="margin-bottom:15px;">Habilitar som a cada novo pedido recebido?</div>
+                <button id="btnPlayAudioExt" style="border-radius:25px;padding:10px 20px;background:#21c063;border:1px solid #FFFFFF33;color:#222222;font-weight:bold;cursor:pointer;">Confirmar</button>
+                &nbsp;
+                <button id="btnNoAudioExt" style="border-radius:25px;padding:10px 20px;background:#222222;border:1px solid #FFFFFF33;color:#DDDDDD;cursor:pointer;">Impedir</button>
+            </div>`;
+            document.body.appendChild(m);
+        }
+
+        document.getElementById('btnPlayAudioExt').onclick=()=>{window._extAudioState.liberado=true;m.style.display='none';tocarAudio();};
+        document.getElementById('btnNoAudioExt').onclick=()=>{window._extAudioState.liberado=false;m.style.display='none';};
+
+        return;
+    }
+
+    let f=document.getElementById('iframeAudioExt');
+    if(!f){
+        f=document.createElement('iframe');
+        f.id='iframeAudioExt';
+        f.style='width:400px;height:80px;position:fixed;right:0;top:0;z-index:999999;border:0px solid #FFFFFF20;display:none;';
+        f.srcdoc=`<!doctype html><html style="background:#000000;color:#FFFFFF;"><body style="background:#000000;color:#FFFFFF;margin:0;padding:8px;display:flex;align-items:center;justify-content:center;"><audio id="extAudio" controls style="width:100%;max-width:360px;"></audio></body></html>`;
+        document.body.appendChild(f);
+        f.onload=()=>tocarAudio();
+        return;
+    }
+
+    { // bloco de substituição do áudio
+        let doc=f.contentWindow.document;
+        let old=doc.getElementById('extAudio'); if(old) old.remove();
+
+        // revalidar configurações a cada chamada
+        let dados2=JSON.parse(localStorage.getItem('printSong')||'{}');
+        let vol2=Number(dados2.volume||1);
+        let src2=chrome.runtime.getURL(`/sons/${dados2.id}.mp3`);
+
+        let a=doc.createElement('audio');
+        a.id='extAudio';
+        a.controls=true;
+        a.muted=window._extAudioState.primeiraMuda?true:false;
+        a.volume=window._extAudioState.primeiraMuda?0:vol2;
+        a.src=src2;
+        a.style='width:100%;max-width:360px;';
+        doc.body.appendChild(a);
+
+        if(window._extAudioState.primeiraMuda){window._extAudioState.primeiraMuda=false;}
+
+        a.currentTime=0; a.play().catch(e=>console.warn("Falha ao tocar áudio:",e));
+    }
 }
+
+
+// chamada inicial
+//tocarAudio();
+
+
+
+// ##########################################################################################################################################################
+
+
+
+
+
+
 
 
 
@@ -529,6 +834,8 @@ function showSendMsg(){
 
 
 /* ========== INICIALIZAÇÃO ========== */
+setTimeout(tocarAudio, 1000); // Habilitar som a cada novo pedido recebido?
+
 loadPrintedRefsFromStorage();
 setTimeout(()=>{
   document.querySelector('[aria-label="WhatsApp"]') ? writeAguardandoStyled() : setTimeout(()=>document.querySelector('[aria-label="WhatsApp"]') ? writeAguardandoStyled() : setTimeout(arguments.callee,5000),5000);
