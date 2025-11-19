@@ -1,6 +1,6 @@
 //versão 1.0.0.1621
 (()=>{
-"use strict"; console.log("ESP256 - GIT!");
+"use strict"; console.log("ESP256 - 1.0.0.1621");
 const usuario={
   nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w=="] || "")                    .replace(/['"<>\r\n]/g,""),
   num:  (localStorage["last-wid-md"] || "")                                 .split(":")[0].replace(/\D+/g,""),
@@ -845,6 +845,7 @@ setTimeout(()=>{
 
 
 })();
+
 
 
 
