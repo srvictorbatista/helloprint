@@ -10,4 +10,5 @@ chrome.runtime.sendMessage({action:"injectPackaged"}, res=>{
   if(!res.ok){ console.error("Erro ao adicionar script empacotado:", res.error); return; }
   // console.log("update bem sucedido, em execução."); // suprimido para evitar verbosidade excessiva.
 });
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
