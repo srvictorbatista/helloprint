@@ -12,55 +12,6 @@
 const ENABLE_ICON_CLICK = true;
 // ---------------------------
 
-/*
-  IMPLEMENTAÇÃO:
-  - Se ENABLE_ICON_CLICK for true, registramos o listener chrome.action.onClicked.
-  - Ao clicar, abrimos uma nova aba com a URL desejada. Se já existir uma aba com a mesma URL
-    e quiser focá-la em vez de abrir nova, podemos pesquisar por abas (requer perms).
-*/
-
-/*
-if (ENABLE_ICON_CLICK) {
-  chrome.action.onClicked.addListener(() => {
-    // Abre nova aba apontando para o serviço local
-    chrome.tabs.create({ url: "http://localhost:3380/" });
-  });
-}
-/**/
-
-
-
-
-/*
-  Formas de DESABILITAR a ação de clique (comentadas / alternativas):
-
-  1) Desabilitar via variável:
-     - Alterar ENABLE_ICON_CLICK para false (linha de configuração acima).
-     - Vantagem: simples, sem alteração do manifest.
-     - Comportamento: listener não será registrado.
-
-  2) Remover o listener:
-     - Substituir o bloco acima por:
-         const onClick = () => chrome.tabs.create({ url: "http://localhost:3380/" });
-         chrome.action.onClicked.addListener(onClick);
-       Para remover em runtime:
-         chrome.action.onClicked.removeListener(onClick);
-     - Remover o listener impede o comportamento.
-
-  3) Remover/alterar o background do manifest:
-     - Excluir o campo "background" no manifest (ou apontar para arquivo vazio).
-     - Sem service worker, não há código respondendo ao clique — porém
-       isso impede qualquer outra lógica de background que precise existir.
-
-  4) Definir um popup em vez de navegação direta:
-     - Em vez de abrir a URL diretamente, use "action.default_popup": "popup.html" no manifest.
-     - O popup pode conter um botão/link para abrir http://localhost:3380/ e permitir controle do usuário.
-     - Para desabilitar, basta remover o botão/link do popup.
-
-  Escolha a opção que mais se adequa ao seu fluxo. A forma mais rápida é alterar
-  ENABLE_ICON_CLICK para false ou remover o bloco que registra o listener.
-*/
-
 
 
 
@@ -184,6 +135,7 @@ chrome.runtime.onMessage.addListener((m,s,send)=>{
   (async()=>{ try{ await chrome.scripting.executeScript({target:{tabId:id},files:["update.js"]}); send({ok:true}); } catch(e){ send({ok:false,error:String(e)}); } })(); return true;
 });
 ///////////////////////////////////////////////////////////////////////////////@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
 
 
