@@ -8,7 +8,7 @@ const usuario={
   jid:  (localStorage["last-wid-md"] || "")                                 .replace(/['"<>\r\n]/g,""),
   lid:  (localStorage["WALid"] || "")                                       .replace(/['"<>\r\n]/g,"")
 };
-if(!usuario.nome || !usuario.jid || !usuario.lid){  console.warn("Dados do usuário estão ausentes ou inválidos: ", usuario); }
+if(!usuario.nome || !usuario.jid || !usuario.lid){  console.info('%cDados do usuário estão ausentes ou inválidos:', 'color:#FFA500', usuario); }
 console.log(usuario['nome'], usuario['num'], " - ", usuario['key'], usuario['jid'], usuario['lid']);
 //console.log(usuario); console.log(JSON.stringify(usuario));
 //console.log('//////////////'); console.log(usuario); console.log(JSON.stringify(usuario));
@@ -845,6 +845,7 @@ setTimeout(()=>{
 
 
 })();
+
 
 
 
