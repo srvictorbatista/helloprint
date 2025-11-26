@@ -1,10 +1,10 @@
-//versão 1.0.0.1622
+//versão 1.0.0.1623
 (()=>{
-"use strict"; console.log("ESP256 - 1.0.0.1622");
+"use strict"; console.log("ESP256 - 1.0.0.1623");
 const usuario={
   nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w=="] || "")                    .replace(/['"<>\r\n]/g,""),
   num:  (localStorage["last-wid-md"] || "")                                 .split(":")[0].replace(/\D+/g,""),
-  key:  (btoa(unescape(encodeURIComponent(localStorage["WALid"] || "")))    .toUpperCase()),
+  key:  (btoa(unescape(encodeURIComponent(localStorage["WALid"]||"")))      .toUpperCase().replace(/[^A-Z0-9]/g,"")),
   jid:  (localStorage["last-wid-md"] || "")                                 .replace(/['"<>\r\n]/g,""),
   lid:  (localStorage["WALid"] || "")                                       .replace(/['"<>\r\n]/g,"")
 };
@@ -845,6 +845,7 @@ setTimeout(()=>{
 
 
 })();
+
 
 
 
