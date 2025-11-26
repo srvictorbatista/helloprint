@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "HELLO PRINT - POS: Impressão de Pedidos no WhatsApp Web",
-  "version": "1.0.0.1622",
+  "version": "1.0.0.1626",
   "description": "Detecta novos pedidos no WhatsApp Web e os envia para impressão.",
   "permissions": [
     "storage",
@@ -40,5 +40,6 @@
     }
   ]
 }
+
 
 
