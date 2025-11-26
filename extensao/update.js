@@ -754,7 +754,7 @@ function showSendMsg(){
   .wa-modal-card *{box-sizing:border-box;}
   .wa-modal-card *:focus{outline:none;border:1px solid #2C2C2C;}
   .wa-modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#000000AA;z-index:9999999;display:flex;align-items:center;justify-content:center;}
-  .wa-modal-card{background:#121212;color:#FFFFFFAA;border-radius:12px;padding:18px;max-width:520px;width:90%;box-shadow:0 10px 30px #000000AA;font-family:Arial,Helvetica,sans-serif;}
+  .wa-modal-card{background:#121212;color:#FFFFFFAA;border:solid 1px #DDDDDD40;border-radius:12px;padding:18px;max-width:520px;width:90%;box-shadow:0 10px 30px #000000AA;font-family:Arial,Helvetica,sans-serif;}
   .wa-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
   .wa-label{min-width:20px;font-size:0.8em;}
   .wa-input{flex:1;padding:8px;border-radius:8px;border:1px solid #2C2C2C;background:#1A1A1A;color:#FFFFFFDD;width:100%;}
@@ -845,6 +845,7 @@ setTimeout(()=>{
 
 
 })();
+
 
 
 
