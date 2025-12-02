@@ -1,5 +1,5 @@
-//versão 1.0.0.1626
-(()=>{ "use strict"; const CURRENT_VERSION = "1.0.0.1626"; 
+//versão 1.0.0.1627
+(()=>{ "use strict"; const CURRENT_VERSION = "1.0.0.1627"; 
 const usuario={
   nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w=="] || "")                    .replace(/['"<>\r\n]/g,""),
   num:  (localStorage["last-wid-md"] || "")                                 .split(":")[0].replace(/\D+/g,""),
@@ -159,7 +159,7 @@ function enviarImpressao(texto, printPOS=""){
         try{ port.onMessage.removeListener(onMsg); }catch(_){}
         try{ port.disconnect(); }catch(_){}
         reject(new Error("Timeout: sem resposta do background para impressão"));
-      },15000);
+      },30000);
       const onMsg = m => {
         if(!m || m.type !== "printResult") return;
         if(finished) return;
@@ -194,7 +194,7 @@ function commitText(fullText){
     "color:#FFFFFF;background-color:#0000FF;font-weight:bold;padding:2px 4px;","",fullText);
   enviarImpressao(fullText, firstPrint || "1")
     .then(res => console.log("Resposta do servidor (HELLO PRINT):", res))
-    .catch(err => console.error("Erro no envio para impressão:", err));
+    .catch(err => console.log("%cErro no envio para impressão:\n", "color:#FFC000; font-weight:bold;", err));
 }
 
 /* ========== OBSERVAÇÃO DE NÓS ========== */
@@ -258,6 +258,9 @@ window.addEventListener('message', event => {
     return;
   }
 });
+
+
+
 
 /* HELLO-PRINT COMANDOS Use:
 
@@ -597,7 +600,8 @@ let firstSilentPlay = true;
 
 function tocarAudio(){
     let dados=JSON.parse(localStorage.getItem('printSong')||'{}');
-    let src=chrome.runtime.getURL(`/sons/${dados.id}.mp3`);
+    //let src=chrome.runtime.getURL(`/sons/${dados.id}.mp3`);
+    let src=(chrome?.runtime?.getURL?chrome.runtime.getURL(`/sons/${(!dados.id?'004':dados.id)}.mp3`):'');
     let vol=Number(dados.volume||1);
 
     if(typeof window._extAudioState==='undefined'){window._extAudioState={liberado:false,primeiraMuda:true};}
@@ -608,7 +612,7 @@ function tocarAudio(){
             m=document.createElement('div');
             m.id='modalPlayAudioExt';
             m.style='position:fixed;top:0;left:0;width:100%;height:100%;background:#000000AA;display:flex;align-items:center;justify-content:center;z-index:1000000;';
-            m.innerHTML=`<div style="margin-bottom:350px;background:#000000;color:#FFFFFF;border:1px solid #DDDDDD30;padding:20px;border-radius:8px;text-align:center;">
+            m.innerHTML=`<div style=" position:absolute;top:20%;background:#000000;color:#FFFFFF;border:1px solid #DDDDDD30;padding:20px;border-radius:8px;text-align:center;">
                 <div style="margin-bottom:15px;"><h2 style="font-size:20px; font-weight:bold; color:#DDDDDD88;"><img style="height:25px; margin-bottom:-5px; margin-right:5px; opacity:0.8;" src="${imgLogoSrc}"> HELLO PRINT - POS &nbsp; v${CURRENT_VERSION}</h2> <BR>Habilitar som a cada novo pedido recebido?</div>
                 <button id="btnPlayAudioExt" style="border-radius:25px;padding:10px 20px;background:#21c063;border:1px solid #FFFFFF33;color:#222222;font-weight:bold;cursor:pointer;">Confirmar</button>
                 &nbsp;
@@ -669,6 +673,89 @@ function tocarAudio(){
 
 
 
+/* ========== REQUEST FLEXIVEL ========== */
+function enviarRequest(method="GET", params={}){
+  return new Promise((resolve, reject) => {
+    try {
+      const port = chrome.runtime.connect({ name: "printer-port" });
+      let finished = false;
+
+      const timeout = setTimeout(() => {
+        if (finished) return;
+        finished = true;
+        try{ port.disconnect(); }catch(_){}
+        reject(new Error("Timeout sem resposta do background"));
+      }, 15000);
+
+      const onMsg = m => {
+        if (!m || m.type !== "requestResult") return;
+        if (finished) return;
+        finished = true;
+        clearTimeout(timeout);
+        try{ port.disconnect(); }catch(_){}
+        m.ok ? resolve(m.data) : reject(new Error(m.error || "Erro desconhecido"));
+      };
+
+      port.onMessage.addListener(onMsg);
+      port.onDisconnect.addListener(() => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timeout);
+        reject(new Error("Port desconectado antes da resposta"));
+      });
+
+      port.postMessage({ action:"request", method, params });
+    } catch (e) { reject(e); }
+  });
+}
+
+
+/*
+enviarRequest("GET", { hotkey:"PAST" })
+  .then(r => console.log("Resposta:", r))
+  .catch(e => console.log("%Hotkey PAST cErro: O servidor não respondeu adequadamente:\n", "color:#FFC000; font-weight:bold;", e));
+/**/
+
+
+// setInterval(()=>enviarRequest("POST",{hotkey:"PAST"}).then(r=>console.log(r)).catch(e=>console.log("%cHotkey PAST Erro: O servidor não respondeu adequadamente:\n", "color:#FFC000; font-weight:bold;", e)),10000);
+
+/*
+(()=>{
+  const intervalo = setInterval(()=>{
+    enviarRequest("POST", { hotkey:"PAST", valor:"123", outra:"XYZ" })
+      .then(r=>console.log("Resposta:", r))
+      .catch(e=>console.log("%cHotkey PAST Erro: O servidor não respondeu adequadamente:\n", "color:#FFC000; font-weight:bold;", e));
+  },10000);
+
+  window.addEventListener("beforeunload",()=>clearInterval(intervalo));
+})();
+/**/
+
+
+//setInterval(()=>enviarRequest("GET",{hotkey:"PAST"}).then(r=>console.log("Resposta:",r)).catch(e=>console.log("%cHotkey PAST Erro: O servidor não respondeu adequadamente:\n", "color:#FFC000; font-weight:bold;", e)),10000);
+
+/*
+(()=>{
+  const intervalo = setInterval(()=>{
+    enviarRequest("GET", { hotkey:"CLIP" })
+      .then(r=>console.log("Resposta:", r)) // Suprime retornos de sucesso
+      .catch(e=>console.log("%cHotkey CLIP Erro: O servidor não respondeu adequadamente:\n", "color:#FFC000; font-weight:bold;", e) );
+  },60000);
+
+  window.addEventListener("beforeunload",()=>clearInterval(intervalo));
+})();
+/**/
+
+function enviarAnexo(){
+  enviarRequest("GET",{hotkey:"CLIP"}).then(async r=>{console.log('Adicionando anexo!');console.log("Resposta:",r); await sleep(3000); await clickSendButton(); await sleep(5000); await clickSendButton(); }).catch(async e=>{console.log("%cHotkey PAST Erro: O servidor não respondeu adequadamente:\n", "color:#FFC000; font-weight:bold;", e);   await sleep(2000); await clickSendButton(); });
+}
+
+
+
+
+
+
+
 
 
 
@@ -679,9 +766,12 @@ function tocarAudio(){
 ///////////////////////
 ///////////////////////
 // Disparos em massa
-const WA_CONFIG={TYPING_DELAY_MS:20,AFTER_SEARCH_WAIT_MS:1000,AFTER_OPEN_CHAT_MS:700,BETWEEN_MESSAGES_MS:800,MAX_RETRY_ATTEMPTS:10,RETRY_INTERVAL_MS:400};
+const WA_CONFIG={TYPING_DELAY_MS:40,AFTER_SEARCH_WAIT_MS:1000,AFTER_OPEN_CHAT_MS:700,BETWEEN_MESSAGES_MS:1800,MAX_RETRY_ATTEMPTS:10,RETRY_INTERVAL_MS:400};
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function pressEnter(){ document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',shiftKey:false,bubbles:true})); }
+function pressShiftEnter(){ document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',shiftKey:true,bubbles:true}));document.activeElement.dispatchEvent(new KeyboardEvent('keyup',{key:'Enter',code:'Enter',shiftKey:true,bubbles:true})); }
+async function chamaPorNum(contactN="558499533663", interval=5000){contactN=String(contactN).replace(/\D+/g,''); contactN=contactN.startsWith('0')?'55'+contactN.slice(1):(contactN.length<11&&!contactN.startsWith('55')?'55'+contactN:contactN); /*contactN=String(contactN).replace(/\D+/g,'');*/ let p=document.getElementById('pane-side'); if(p){let o=document.getElementById('ContactNumber'); if(o)o.remove(); let a=document.createElement('a'); a.id='ContactNumber'; a.href=`https://wa.me/${contactN}`; p.insertBefore(a,p.firstChild); a.click();} await sleep(interval);}
 
 async function waitFor(selectorOrFn,timeout=10000,interval=WA_CONFIG.RETRY_INTERVAL_MS){
   const start=Date.now();
@@ -695,12 +785,14 @@ async function waitFor(selectorOrFn,timeout=10000,interval=WA_CONFIG.RETRY_INTER
   return null;
 }
 
-async function typeSimulatedExec(el,text,delay=WA_CONFIG.TYPING_DELAY_MS){
+async function typeSimulatedExec(el,text,delay=WA_CONFIG.TYPING_DELAY_MS, pequisa=true){
   if(!el) throw new Error("Elemento inválido");
   el.focus();
   for(let i=0;i<text.length;i++){document.execCommand('insertText',false,text[i]);await sleep(delay);}
-  el.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
-  el.dispatchEvent(new KeyboardEvent('keyup',{key:'Enter',bubbles:true}));
+  if (pequisa === true){
+    el.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+    el.dispatchEvent(new KeyboardEvent('keyup',{key:'Enter',bubbles:true}));
+  }
 }
 
 async function clickSendButton(){const sendButton=await waitFor('*[aria-label="Enviar"]',5000);sendButton?.click();}
@@ -710,24 +802,46 @@ async function sendToContact(contact,messages=[],repeat=1,typingDelay=WA_CONFIG.
     const searchBox=await waitFor('*[aria-label="Caixa de texto de pesquisa"]',6000);
     if(!searchBox) throw new Error('Campo de pesquisa não encontrado');
     if(searchBox.isContentEditable) searchBox.innerText=''; else searchBox.value='';
-    await typeSimulatedExec(searchBox,contact,typingDelay);
-    await sleep(WA_CONFIG.AFTER_SEARCH_WAIT_MS);
+    await console.log( 'contato:', contact );
+    let contactN=contact.replace(/\D+/g,''); if(contactN && contactN.length>8){
+      console.log('telefone!');
+      chamaPorNum(contactN);
+      await sleep(5000);
+    }else{
+      console.log('nome!');
+      await typeSimulatedExec(searchBox,contact,typingDelay);
+      await sleep(WA_CONFIG.AFTER_SEARCH_WAIT_MS);
+      await new Promise(r=>{let i=setInterval(()=>{if(document.querySelector('[data-icon="mic-outlined"]')){clearInterval(i);r();}},100);}); /* aguarda o chat ser carregado */
+      document.querySelector('[aria-label="Cancelar pesquisa"]')?.click(); /* fechar pesquisa */
+    }
+
+    await sleep(8000);
     await sleep(WA_CONFIG.AFTER_OPEN_CHAT_MS);
     const messageBox=await waitFor('*[aria-placeholder="Digite uma mensagem"]',8000);
     if(!messageBox) throw new Error('Campo de mensagem não encontrado');
 
     const realName=document.querySelector('#main *[dir="auto"]')?.innerText||contact;
 
-    for(let r=0;r<repeat;r++){
+    for(let r=0;r<repeat;r++){ // typing...
       for(let i=0;i<messages.length;i++){
         const msg=messages[i].replaceAll('{{nome}}',realName);
-        await typeSimulatedExec(messageBox,msg,typingDelay);
-        await clickSendButton();
+        await typeSimulatedExec(messageBox,msg,typingDelay, false); 
+        /* SHIFT + Enter */ await pressShiftEnter();
         await sleep(betweenMessages);
       }
     }
+
+    await enviarAnexo();
+    await sleep(betweenMessages);
+
+    await sleep(5000);
+
+    
+    /* Enter */ await pressEnter();
+     await clickSendButton();
+    
     return {contact,status:'ok'};
-  }catch(e){console.error(`Erro no contato "${contact}":`,e);return {contact,status:'erro',error:e.message||e};}
+  }catch(e){console.log(`%cErro no contato "${contact}":\n`, "color:#FFC000; font-weight:bold;", e); return {contact,status:'erro',error:e.message||e};}
 }
 
 async function sendToMultipleContacts(contactsStr,messages=[],repeat=1,typingDelay=WA_CONFIG.TYPING_DELAY_MS,betweenMessages=WA_CONFIG.BETWEEN_MESSAGES_MS,abortFlag={stop:false}){
@@ -742,6 +856,7 @@ async function sendToMultipleContacts(contactsStr,messages=[],repeat=1,typingDel
   }
   document.getElementById('waStatus').innerHTML='<STRONG style="color:#25D366;">Concluído!</STRONG> <BR>Use (<STRONG>F-12</STRONG>) para ver o Resumo do Envio.';
   console.log('Resumo do envio:',results);
+  // .. LIMPAR PASTA DE ANEXOS
 }
 
 // --- Função para exibir o modal quando chamada ---
@@ -756,7 +871,7 @@ function showSendMsg(){
   .wa-modal-card *{box-sizing:border-box;}
   .wa-modal-card *:focus{outline:none;border:1px solid #2C2C2C;}
   .wa-modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#000000AA;z-index:9999999;display:flex;align-items:center;justify-content:center;}
-  .wa-modal-card{background:#121212;color:#FFFFFFAA;border:solid 1px #DDDDDD30;border-radius:12px;padding:18px;max-width:520px;width:90%;box-shadow:0 10px 30px #000000AA;font-family:Arial,Helvetica,sans-serif;}
+  .wa-modal-card{position:absolute;top:20%; background:#121212;color:#FFFFFFAA;border:solid 1px #DDDDDD30;border-radius:12px;padding:18px;max-width:580px;width:90%;box-shadow:0 10px 30px #000000AA;font-family:Arial,Helvetica,sans-serif;}
   .wa-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
   .wa-label{min-width:20px;font-size:0.8em;}
   .wa-input{flex:1;padding:8px;border-radius:8px;border:1px solid #2C2C2C;background:#1A1A1A;color:#FFFFFFDD;width:100%;}
@@ -767,6 +882,29 @@ function showSendMsg(){
   .wa-small{font-size:12px;color:#BFBFBF;}
   .wa-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
   .wa-close{position:absolute;right:2px;top:-2px;cursor:pointer;color:#BFBFBF;}
+
+  #wa-uploader{/*background:#0F1720;border:1px solid #1F2933; max-width:550px; margin:16px auto;padding:12px;border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.6);*/ font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  *:focus {outline: none;}
+  .wa-uploader{display:flex;flex-direction:column;gap:12px;}
+  .wa-file-input{display:none;}
+  .wa-dropzone{/**/ background:linear-gradient(180deg,#0B1116 0%,#0F1720 100%); display:flex;align-items:center;gap:12px;padding:14px;border-radius:10px;border:4px dashed #263043;cursor:pointer;outline:none; margin:10px 0px 0px 0px;}
+  .wa-dropzone:focus{outline: none;}
+  .wa-icon{flex:0 0 56px;}
+  .wa-title{font-size:14px;color:#FFFFFFAA;}
+  .wa-texts{display:flex;flex-direction:column;gap:4px;color:#FFFFFF33;}
+  .wa-hint{font-size:12px;color:#00FF5FAA;}
+  .wa-preview{display:none;flex-wrap:wrap;gap:8px;padding:4px;min-height:auto;}
+  .wa-thumb{position:relative;width:108px;height:72px;border-radius:8px;overflow:hidden;background:#0B0F12;border:1px solid #1F2933;display:flex;align-items:center;justify-content:center;padding:6px;}
+  .wa-thumb img, .wa-thumb video{max-width:100%;max-height:100%;object-fit:cover;}
+  .wa-file-meta{display:flex;flex-direction:column;gap:4px;padding:6px;color:#E6EEF3;font-size:13px;}
+  .wa-doc{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;border:1px solid #1F2933;background:#081018;}
+  .wa-doc-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0B0F12;background:#25D366;}
+  .wa-doc-name{font-size:13px;color:#E6EEF3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;}
+  .wa-remove{position:absolute;top:6px;right:6px;background:#00000066;border:none;color:#FFFFFF;border-radius:6px;padding:4px;cursor:pointer;}
+  .wa-actions{display:flex;gap:8px;justify-content:flex-end;}
+  .wa-button{padding:8px 12px;border-radius:15px;border:none;background:#25D366;color:#0B0F12;font-weight:600;cursor:pointer;}
+  .wa-ghost{background:transparent;border:1px solid #263043;color:#E6EEF3;}
+  .wa-empty{color:#94A3B8;font-size:13px;padding:12px;border-radius:8px;background:#071018;border:1px dashed #14202A; display:none;}
   `;
   document.head.appendChild(style);
 
@@ -777,7 +915,10 @@ function showSendMsg(){
     <div class="wa-modal-card">
       <div style="position:relative;">
         <div class="wa-close" id="waCloseBtn" title="Fechar">✕</div>
-        <h3 style="font-size:30px;">Mensagens Automatizadas</h3><BR>
+        <h3 style="font-size:30px;"> 
+            <img style="height:30px; margin-bottom:-5px; margin-right:5px; opacity:0.8;" src="${imgLogoSrc}">  
+            Mensagens Automatizadas
+        </h3><BR>
         <div class="wa-row" style="flex-direction:column;align-items:flex-start;">
           <div class="wa-label" style="width:100%;">Contatos (separados por vírgula)</div>
           <input id="waContactsInput" class="wa-input" placeholder="Fulano, Maria, João, +5511999999999, grupo, etc...">
@@ -786,12 +927,27 @@ function showSendMsg(){
           <div class="wa-label" style="width:100%;">Mensagens (uma por linha)</div>
           <textarea id="waMessagesInput" class="wa-textarea" placeholder="Use {{nome}} para personalizar a mensagem."></textarea>
         </div>
-        <div class="wa-row">
-          <div class="wa-label" style="text-align:right;">Repetir:</div><input id="waRepeatInput" class="wa-input" type="number" value="1" min="1" max="5" style="max-width:50px;min-width:50px;">
+
+          <!-- upload de anexos -->
+          <div id="wa-uploader" class="wa-uploader" aria-label="Área de upload de arquivos" role="region">
+            <input id="wa-file-input" class="wa-file-input" type="file" multiple accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" aria-hidden="true">
+            <div id="wa-dropzone" class="wa-dropzone" tabindex="0" role="button" aria-describedby="wa-hint">
+
+              <svg class="wa-icon" style="float:left; position:absolute; z-index:0;" viewBox="0 0 24 24" width="56" height="56" aria-hidden="true"><path fill="#25D366CC" d="M12 2C6.48 2 2 6.48 2 12c0 2.21.71 4.25 1.92 5.94L2 22l4.12-1.86C8.25 21.29 10.29 22 12.5 22 18.02 22 22.5 17.52 22.5 12S18.02 2 12.5 2H12z"/></svg>   
+              <svg style="z-index:1;margin:0px 8px;" width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000AA" transform="matrix(1, 0, 0, -1, 0, 0)rotate(150)"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M19.8278 11.2437L12.7074 18.3641C10.7548 20.3167 7.58896 20.3167 5.63634 18.3641C3.68372 16.4114 3.68372 13.2456 5.63634 11.293L12.4717 4.45763C13.7735 3.15589 15.884 3.15589 17.1858 4.45763C18.4875 5.75938 18.4875 7.86993 17.1858 9.17168L10.3614 15.9961C9.71048 16.647 8.6552 16.647 8.00433 15.9961C7.35345 15.3452 7.35345 14.2899 8.00433 13.6391L14.2258 7.41762" stroke="#000000AA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+
+              <div class="wa-texts"><strong class="wa-title">Enviar arquivos</strong><span id="wa-hint" class="wa-hint">Arraste arquivos aqui ou clique para selecionar (imagens, vídeos, documentos)</span></div>
+            </div>
+            <div id="wa-preview" class="wa-preview" aria-live="polite"></div>
+            <div id="wa-actions" class="wa-actions" style="display:none;"><button id="wa-send-btn" class="wa-button" type="button">Enviar</button><button id="wa-clear-btn" class="wa-button wa-ghost" type="button">Limpar</button></div>
+          </div>
+
+          <div class="wa-row" style="margin-top:40px;">
+          <div class="wa-label" style="text-align:right;">Repetir:</div><input id="waRepeatInput" class="wa-input" type="number" value="0" min="0" max="5" style="max-width:50px;min-width:50px;">
           <div style="flex:0"></div>
-          <div class="wa-label" style="text-align:right;">Delay entre msgs:</div><input id="waBetweenInput" class="wa-input" type="number" value="${WA_CONFIG.BETWEEN_MESSAGES_MS}" min="20" max="999" style="max-width:60px;min-width:60px;"> ms
+          <div class="wa-label" style="text-align:right;">Delay entre linhas:</div><input id="waBetweenInput" class="wa-input" type="number" value="${WA_CONFIG.BETWEEN_MESSAGES_MS}" min="800" max="4999" style="max-width:80px;min-width:80px;"> ms
           <div style="flex:1"></div>
-          <div class="wa-label" style="text-align:right;">Delay por caractere:</div><input id="waTypingInput" class="wa-input" type="number" value="${WA_CONFIG.TYPING_DELAY_MS}" min="20" max="999" style="max-width:60px;min-width:60px;">
+          <div class="wa-label" style="text-align:right;">Delay por caractere:</div><input id="waTypingInput" class="wa-input" type="number" value="${WA_CONFIG.TYPING_DELAY_MS}" min="40" max="999" style="max-width:60px;min-width:60px;">
         </div>
         <div class="wa-small" style="margin-top:20px;color:#FDB100BB;">Use com responsabilidade e não abuse deste recurso.</div>
       </div>
@@ -807,15 +963,137 @@ function showSendMsg(){
   `;
   document.body.appendChild(overlay);
 
+  //####################################################
+  //# Uplad de anexos
+  //####################################################
+    // Configuração principal:
+    // ALLOW_MULTIPLE = true;  // aceita vários arquivos
+    // ALLOW_MULTIPLE = false; // aceita apenas um arquivo
+    const ALLOW_MULTIPLE = false;
+
+    /* Implementação do uploader com alternância dinâmica */
+    (function(){
+        const i=document.getElementById('wa-file-input'),
+              d=document.getElementById('wa-dropzone'),
+              p=document.getElementById('wa-preview'),
+              s=document.getElementById('wa-send-btn')||null,
+              c=document.getElementById('wa-clear-btn')||null;
+
+        if(ALLOW_MULTIPLE){i.setAttribute("multiple","");}else{i.removeAttribute("multiple");}
+
+        let f=[];
+
+        const reg=l=>{f=!ALLOW_MULTIPLE?[l[0]]:[...f,...Array.from(l)]; rend();};
+
+        const rend=()=>{
+            if(!f.length){
+                p.style='display:none;';
+                p.innerHTML='<div class="wa-empty">Nenhum arquivo selecionado</div>';
+                /*limpar anexos*/ enviarRequest("POST",{act:"down"});
+                return;
+            }
+            p.innerHTML='';
+            f.forEach((x,k)=>{
+                const t=x.type||'';
+                if(t.startsWith('image/')||t.startsWith('video/')||t.startsWith('audio/')){
+                    const w=document.createElement('div'); w.className='wa-thumb';
+                    const r=document.createElement('button'); r.className='wa-remove'; r.innerText='✕'; r.onclick=()=>{f.splice(k,1); rend();};
+                    if(t.startsWith('video/')){
+                        const v=document.createElement('video'); v.controls=true; v.src=URL.createObjectURL(x); w.appendChild(v);
+                    }else if(t.startsWith('image/')){
+                        const m=document.createElement('img'); m.src=URL.createObjectURL(x); w.appendChild(m);
+                    }else{
+                        const tx=document.createElement('div'); tx.className='wa-file-meta'; tx.innerText=x.name; w.appendChild(tx);
+                    }
+                    w.appendChild(r); p.appendChild(w); p.style='display:flex;'; return;
+                }
+
+                const dc=document.createElement('div'); dc.className='wa-doc';
+                const ic=document.createElement('div'); ic.className='wa-doc-icon'; ic.innerText=x.name.split('.').pop().toUpperCase();
+                const mt=document.createElement('div'); mt.className='wa-file-meta';
+                const nm=document.createElement('div'); nm.className='wa-doc-name'; nm.innerText=x.name;
+                const sz=document.createElement('div'); sz.style.fontSize='12px'; sz.style.color='#94A3B8'; sz.innerText=((x.size/1024)|0)+' KB';
+                const rm=document.createElement('button'); rm.className='wa-remove'; rm.innerText='✕'; rm.onclick=()=>{f.splice(k,1); rend();};
+                mt.appendChild(nm); mt.appendChild(sz); dc.appendChild(ic); dc.appendChild(mt); dc.appendChild(rm); p.appendChild(dc);
+            });
+        };
+
+
+        /* Necessário converter arquivos para Base64 para enviar via extension messaging */
+        async function filesToBase64Array(files){
+            const out=[];
+            for(const fl of files){
+                const buf=await fl.arrayBuffer();
+                const bin=new Uint8Array(buf);
+                let b64='';
+                for(let i=0;i<bin.length;i++){b64+=String.fromCharCode(bin[i]);}
+                out.push({
+                    name:fl.name,
+                    type:fl.type,
+                    size:fl.size,
+                    base64:btoa(b64)
+                });
+            }
+            return out;
+        }
+
+
+        async function enviarArquivos(){
+            if(!f.length){
+                c.innerText='Nenhum arquivo para enviar.'; setTimeout(()=>{c.innerText='Limpar';},5000);
+                return;
+            }
+
+            try{
+                if(s){s.disabled=true; s.innerText='Enviando...';}
+
+                const arquivosBase64=await filesToBase64Array(f);
+
+                const r=await enviarRequest("POST",{
+                    act:"up",
+                    arquivos:arquivosBase64,
+                    multiple:ALLOW_MULTIPLE
+                });
+
+                f=[]; if(s){s.innerText='Enviado';}
+
+            }catch(er){
+                c.innerText='Erro ao enviar: '+er.message; setTimeout(()=>{c.innerText='Limpar';},15000);
+            }finally{
+                if(s){s.disabled=false; setTimeout(()=>s.innerText='Enviar',800);}
+            }
+        }
+
+
+        d.addEventListener('click',()=>i.click());
+        i.addEventListener('change',e=>{ if(!e.target.files.length){return;} reg(e.target.files); i.value=''; });
+        ['dragenter','dragover'].forEach(v=>d.addEventListener(v,e=>{e.preventDefault(); e.stopPropagation(); d.style.borderColor='#25D366';}));
+        ['dragleave','drop'].forEach(v=>d.addEventListener(v,e=>{ e.preventDefault(); e.stopPropagation(); d.style.borderColor=''; }));
+
+        d.addEventListener('drop',async e=>{
+            reg(e.dataTransfer.files);
+            await enviarArquivos();
+        });
+
+        if(c){c.addEventListener('click',()=>{f=[]; rend(); c.innerText='Limpar';});}
+
+        if(s){s.addEventListener('click',async()=>{await enviarArquivos();});}
+
+        i.addEventListener('change',async()=>{await enviarArquivos();});
+
+        rend();
+    })();
+  //####################################################
+  //####################################################
+
   document.getElementById('waCloseBtn').onclick=()=>overlay.style.display='none';
   let abortFlag={stop:false};
-  document.getElementById('waStopBtn').onclick=()=>{abortFlag.stop=true;document.getElementById('waStatus').innerText='Parando...';};
-
+  document.getElementById('waStopBtn').onclick=()=>{abortFlag.stop=true;document.getElementById('waStatus').innerText='Parando...';      setTimeout(()=>{const e=document.getElementById('waStatus');if(e&&e.innerText==='Parando...')e.innerText='parado';},30000);};
   document.getElementById('waStartBtn').onclick=async()=>{
     abortFlag.stop=false;
-    const contacts=document.getElementById('waContactsInput').value.trim();
+    const contacts=document.getElementById('waContactsInput').value.replace(/[;:]/g,',').trim();
     const msgs=document.getElementById('waMessagesInput').value.split('\n').map(s=>s.trim()).filter(Boolean);
-    const repeat=Math.max(1,parseInt(document.getElementById('waRepeatInput').value||'1'));
+    const repeat=Math.max(0,parseInt(document.getElementById('waRepeatInput').value||'0'))+1;
     const between=Math.max(0,parseInt(document.getElementById('waBetweenInput').value||String(WA_CONFIG.BETWEEN_MESSAGES_MS)));
     const typing=Math.max(10,parseInt(document.getElementById('waTypingInput').value||String(WA_CONFIG.TYPING_DELAY_MS)));
 
@@ -823,7 +1101,7 @@ function showSendMsg(){
     if(msgs.length===0){alert('Informe ao menos uma mensagem.');return;}
 
     document.getElementById('waStatus').innerText='Executando...';
-    try{await sendToMultipleContacts(contacts,msgs,repeat,typing,between,abortFlag);}catch(e){document.getElementById('waStatus').innerText='Erro';console.error(e);alert('Erro: '+(e.message||e));}
+    try{await sendToMultipleContacts(contacts,msgs,repeat,typing,between,abortFlag);}catch(e){document.getElementById('waStatus').innerText='Erro';console.log("%c"+e+"\n", "color:#FFC000; font-weight:bold;"); alert('Erro: '+(e.message||e));}
   };
 }
 ///////////////////////
