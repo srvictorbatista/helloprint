@@ -51,7 +51,7 @@ async function fetchPrintersOnce() {
   notifyPorts();
 }
 
-function startPollingIfNeeded() {
+function startPollingIfNeeded(){
   if (firstPrint) return;
   if (!pollInterval) {
     fetchPrintersOnce();
@@ -85,7 +85,8 @@ chrome.runtime.onConnect.addListener(port => {
         return;
       }
 
-      if (msg.action === 'print') {
+      // PRINT
+      if(msg.action === 'print'){
         const printPOS = msg.printPOS || firstPrint || "";
         const body = `texto=${encodeURIComponent(msg.texto || "")}&printPOS=${encodeURIComponent(printPOS)}`;
 
@@ -101,9 +102,54 @@ chrome.runtime.onConnect.addListener(port => {
           port.postMessage({ type: "printResult", ok: false, error: String(err) });
         }
       }
+
+      // request
+      if (msg.action === 'request') {
+        try {
+          const method = msg.method || "GET";
+          const params = msg.params || {};
+          let query = [];
+          if(params.hotkey){  query.push(`hotkey=${encodeURIComponent(params.hotkey)}`); }
+          if(params.act){  query.push(`act=${encodeURIComponent(params.act)}`); }
+          const qs = query.length ? `?${query.join("&")}` : "";
+          const url = `http://localhost:${PORT_HELLO}/pull/${qs}`;
+          let fetchOptions = { method, cache: "no-store" };
+          if (method === "POST"){
+            // Se houver arquivos Base64 enviados pelo front
+            if (params.act === "up" && Array.isArray(params.arquivos)){
+
+              const arquivosEncoded = params.arquivos.map(a => JSON.stringify(a));
+              const bodyObj = {
+                act: "up",
+                multiple: params.multiple ? "1" : "0",
+                arquivos: JSON.stringify(arquivosEncoded)
+              };
+
+              fetchOptions.headers = { "Content-Type": "application/x-www-form-urlencoded" };
+              fetchOptions.body = new URLSearchParams(bodyObj).toString();
+            }else{
+              // POST Normal (request sem upload)
+              fetchOptions.headers = { "Content-Type": "application/x-www-form-urlencoded" };
+              fetchOptions.body = new URLSearchParams(params).toString();
+            }
+          }
+
+          const resp = await fetch(url, fetchOptions);
+          const data = await resp.json().catch(() => ({ ok: resp.ok, status: resp.status }));
+
+          port.postMessage({ type: "requestResult", ok: true, data });
+        } catch (err) {
+          port.postMessage({ type: "requestResult", ok: false, error: String(err) });
+        }
+        return;
+      }
+
+
+
     } catch (e) {
       try { port.postMessage({ type: "printResult", ok: false, error: String(e) }); } catch (_) {}
     }
+
   });
 
   port.onDisconnect.addListener(() => ports.delete(port));
