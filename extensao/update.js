@@ -1,7 +1,7 @@
-//versão 1.0.0.1627
-(()=>{ "use strict"; const CURRENT_VERSION = "1.0.0.1627"; 
+//versão 1.0.0.1628
+(()=>{ "use strict"; const CURRENT_VERSION = "1.0.0.1628"; 
 const usuario={
-  nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w==XX"] || "")                    .replace(/['"<>\r\n]/g,""),
+  nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w==XX"] || "")                  .replace(/['"<>\r\n]/g,""),
   num:  (localStorage["last-wid-md"] || "")                                 .split(":")[0].replace(/\D+/g,""),
   key:  (btoa(unescape(encodeURIComponent(localStorage["WALid"]||"")))      .toUpperCase().replace(/[^A-Z0-9]/g,"")),
   jid:  (localStorage["last-wid-md"] || "")                                 .replace(/['"<>\r\n]/g,""),
