@@ -1,7 +1,7 @@
 //versão 1.0.0.1627
 (()=>{ "use strict"; const CURRENT_VERSION = "1.0.0.1627"; 
 const usuario={
-  nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w=="] || "")                    .replace(/['"<>\r\n]/g,""),
+  nome: (localStorage["2WiRXD/ViPla+Cu9THWG2w==XX"] || "")                    .replace(/['"<>\r\n]/g,""),
   num:  (localStorage["last-wid-md"] || "")                                 .split(":")[0].replace(/\D+/g,""),
   key:  (btoa(unescape(encodeURIComponent(localStorage["WALid"]||"")))      .toUpperCase().replace(/[^A-Z0-9]/g,"")),
   jid:  (localStorage["last-wid-md"] || "")                                 .replace(/['"<>\r\n]/g,""),
@@ -31,9 +31,9 @@ const unwantedSelectors = [
 
 
 
-console.log(`ESP256 - ${CURRENT_VERSION}`);
-if(!usuario.nome || !usuario.jid || !usuario.lid){  console.info('%cDados do usuário estão ausentes ou inválidos:', 'color:#FFA500'); }
-console.log(usuario['nome'], usuario['num'], " - ", usuario['key'], usuario['jid'], usuario['lid']);
+
+if(!usuario.jid || !usuario.lid){  console.info('%cDados do usuário estão ausentes ou inválidos:', 'color:#FFA500'); }
+console.log(`HELLO PRINT - POS \nv${CURRENT_VERSION}:`, usuario['num'] +'  -  '+  usuario['key'] +'\n'+ usuario['jid'] +'   -   '+ usuario['lid'] + '\n\nAguarde, carregando dados...');
 //console.log(usuario); console.log(JSON.stringify(usuario));
 //console.log('//////////////'); console.log(usuario); console.log(JSON.stringify(usuario));
 
@@ -262,24 +262,6 @@ window.addEventListener('message', event => {
 
 
 
-/* HELLO-PRINT COMANDOS Use:
-
-// Para consultar a lista e REF- já impressos do storange
-//  JSON.parse(localStorage.getItem("printedRefs") || "[]");
-
-
-// Para consultar a lista e REF- já impressos da API
-    (() => new Promise(resolve => {
-      function onMsg(e){ if(e.data?.type === 'HELLO_PRINT_RESPONSE_REFS'){ window.removeEventListener('message', onMsg); resolve(e.data.refs); } }
-      window.addEventListener('message', onMsg);
-      window.postMessage({ type: 'HELLO_PRINT_HIST' }, '*');
-    }) )().then(refs => console.log(refs));
-
-
-// Para limpar registros da API via postMessage (use com cautela)   
-    window.addEventListener('message', function onClear(e){ if(e.data?.type === 'HELLO_PRINT_CLEAR_HIST_OK'){ console.log('Histórico limpo'); window.removeEventListener('message', onClear); }});
-    window.postMessage({ type: 'HELLO_PRINT_CLEAR_HIST' }, '*');
-*/
 
 
 
@@ -340,7 +322,7 @@ console.log(
        }
    }); window.postMessage({ type: 'HELLO_PRINT_CLEAR_HIST' }, '*');
 %c=====================================================================\n
-%cEnvio de mensagens em massa (MÓDULO BÁSICO):
+%cEnvio de mensagens em massa:
 %cClique no brand (suport) para exibir o ícone do disparo em massa.\n
 \n
 %c Para ajuda adicional entre em contato por: t.me/LevyMac 
@@ -802,29 +784,37 @@ async function sendToContact(contact,messages=[],repeat=1,typingDelay=WA_CONFIG.
     const searchBox=await waitFor('*[aria-label="Caixa de texto de pesquisa"]',6000);
     if(!searchBox) throw new Error('Campo de pesquisa não encontrado');
     if(searchBox.isContentEditable) searchBox.innerText=''; else searchBox.value='';
-    await console.log( 'contato:', contact );
+    //await console.log( 'contato:', contact );
     let contactN=contact.replace(/\D+/g,''); if(contactN && contactN.length>8){
-      console.log('telefone!');
+      //console.log('telefone!');
+      await console.log( 'Telefone:', contact );
       chamaPorNum(contactN);
-      await sleep(5000);
+      //await sleep(5000);
     }else{
-      console.log('nome!');
+      await console.log( 'Nome:', contact );
       await typeSimulatedExec(searchBox,contact,typingDelay);
       await sleep(WA_CONFIG.AFTER_SEARCH_WAIT_MS);
       await new Promise(r=>{let i=setInterval(()=>{if(document.querySelector('[data-icon="mic-outlined"]')){clearInterval(i);r();}},100);}); /* aguarda o chat ser carregado */
       document.querySelector('[aria-label="Cancelar pesquisa"]')?.click(); /* fechar pesquisa */
     }
-
-    await sleep(8000);
+    await new Promise(r=>{let i=setInterval(()=>{if(document.querySelector('[data-icon="mic-outlined"]')){clearInterval(i);r();}},100);}); /* aguarda o chat ser carregado */
+    //await sleep(8000);
     await sleep(WA_CONFIG.AFTER_OPEN_CHAT_MS);
     const messageBox=await waitFor('*[aria-placeholder="Digite uma mensagem"]',8000);
     if(!messageBox) throw new Error('Campo de mensagem não encontrado');
 
     const realName=document.querySelector('#main *[dir="auto"]')?.innerText||contact;
 
+    const emojiPool=["😀","😁","🤣","🔥","🚀","✨","😎","🤩","😉","💥","🍀","🌟","👑","🏁","🇧🇷","❤️","🎲","🎉","🎊","🍰","🍿","🍮","🎂","🧁","🥧","🙏","👏👏👏","🤝"], nRandMin=5, nRandMax=16,
+    randEmoji=[...Array(Math.floor(Math.random()*(nRandMax-nRandMin)+nRandMin))].map(()=>emojiPool[Math.floor(Math.random()*emojiPool.length)]).join("");
+    //console.log(randEmoji);
+
+
     for(let r=0;r<repeat;r++){ // typing...
       for(let i=0;i<messages.length;i++){
-        const msg=messages[i].replaceAll('{{nome}}',realName);
+        const msg=messages[i].
+          replaceAll('{{nome}}',realName).
+          replaceAll('{{emoji}}',randEmoji);
         await typeSimulatedExec(messageBox,msg,typingDelay, false); 
         /* SHIFT + Enter */ await pressShiftEnter();
         await sleep(betweenMessages);
@@ -854,7 +844,9 @@ async function sendToMultipleContacts(contactsStr,messages=[],repeat=1,typingDel
     const result=await sendToContact(contact,messages,repeat,typingDelay,betweenMessages);
     results.push(result);
   }
-  document.getElementById('waStatus').innerHTML='<STRONG style="color:#25D366;">Concluído!</STRONG> <BR>Use (<STRONG>F-12</STRONG>) para ver o Resumo do Envio.';
+  document.getElementById('waStatus').innerHTML='<STRONG id="msgConcl" style="color:#25D366; font-size:27px;">CONCLUÍDO!</STRONG> <BR>Use (<STRONG>F-12</STRONG>) para ver o Resumo do Envio.';
+              for(let i=0;i<12;i++)setTimeout(()=>document.querySelector('#msgConcl').style.opacity=i%2?1:0.2, i*120); setTimeout(()=>document.querySelector('#msgConcl').style.opacity=1,3000);
+
   console.log('Resumo do envio:',results);
   // .. LIMPAR PASTA DE ANEXOS
 }
@@ -900,7 +892,7 @@ function showSendMsg(){
   .wa-doc{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;border:1px solid #1F2933;background:#081018;}
   .wa-doc-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#0B0F12;background:#25D366;}
   .wa-doc-name{font-size:13px;color:#E6EEF3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;}
-  .wa-remove{position:absolute;top:6px;right:6px;background:#00000066;border:none;color:#FFFFFF;border-radius:6px;padding:4px;cursor:pointer;}
+  .wa-remove{position:relative;top:-20px;right:6px;background:#00000066;border:none;color:#FFFFFF;border-radius:6px;padding:4px;cursor:pointer;}
   .wa-actions{display:flex;gap:8px;justify-content:flex-end;}
   .wa-button{padding:8px 12px;border-radius:15px;border:none;background:#25D366;color:#0B0F12;font-weight:600;cursor:pointer;}
   .wa-ghost{background:transparent;border:1px solid #263043;color:#E6EEF3;}
@@ -924,8 +916,8 @@ function showSendMsg(){
           <input id="waContactsInput" class="wa-input" placeholder="Fulano, Maria, João, +5511999999999, grupo, etc...">
         </div>
         <div class="wa-row" style="flex-direction:column;align-items:flex-start;">
-          <div class="wa-label" style="width:100%;">Mensagens (uma por linha)</div>
-          <textarea id="waMessagesInput" class="wa-textarea" placeholder="Use {{nome}} para personalizar a mensagem."></textarea>
+          <div class="wa-label" style="width:100%;">Mensagem (aceita emojis)</div>
+          <textarea id="waMessagesInput" class="wa-textarea" placeholder="Para personalizar cada mensagem \nUse {{nome}} para enviar o nome do contato. \nUse {{emoji}} para até 16 emojis aleatoreos."></textarea>
         </div>
 
           <!-- upload de anexos -->
@@ -936,7 +928,10 @@ function showSendMsg(){
               <svg class="wa-icon" style="float:left; position:absolute; z-index:0;" viewBox="0 0 24 24" width="56" height="56" aria-hidden="true"><path fill="#25D366CC" d="M12 2C6.48 2 2 6.48 2 12c0 2.21.71 4.25 1.92 5.94L2 22l4.12-1.86C8.25 21.29 10.29 22 12.5 22 18.02 22 22.5 17.52 22.5 12S18.02 2 12.5 2H12z"/></svg>   
               <svg style="z-index:1;margin:0px 8px;" width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000AA" transform="matrix(1, 0, 0, -1, 0, 0)rotate(150)"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M19.8278 11.2437L12.7074 18.3641C10.7548 20.3167 7.58896 20.3167 5.63634 18.3641C3.68372 16.4114 3.68372 13.2456 5.63634 11.293L12.4717 4.45763C13.7735 3.15589 15.884 3.15589 17.1858 4.45763C18.4875 5.75938 18.4875 7.86993 17.1858 9.17168L10.3614 15.9961C9.71048 16.647 8.6552 16.647 8.00433 15.9961C7.35345 15.3452 7.35345 14.2899 8.00433 13.6391L14.2258 7.41762" stroke="#000000AA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
 
-              <div class="wa-texts"><strong class="wa-title">Enviar arquivos</strong><span id="wa-hint" class="wa-hint">Arraste arquivos aqui ou clique para selecionar (imagens, vídeos, documentos)</span></div>
+              <div class="wa-texts">
+                <strong class="wa-title">Enviar arquivos (até 6MB)</strong>
+                <span id="wa-hint" class="wa-hint">Arraste arquivos aqui ou clique para selecionar (imagens, vídeos, documentos)</span>
+              </div>
             </div>
             <div id="wa-preview" class="wa-preview" aria-live="polite"></div>
             <div id="wa-actions" class="wa-actions" style="display:none;"><button id="wa-send-btn" class="wa-button" type="button">Enviar</button><button id="wa-clear-btn" class="wa-button wa-ghost" type="button">Limpar</button></div>
@@ -963,128 +958,159 @@ function showSendMsg(){
   `;
   document.body.appendChild(overlay);
 
-  //####################################################
-  //# Uplad de anexos
-  //####################################################
-    // Configuração principal:
-    // ALLOW_MULTIPLE = true;  // aceita vários arquivos
-    // ALLOW_MULTIPLE = false; // aceita apenas um arquivo
-    const ALLOW_MULTIPLE = false;
+//####################################################
+//# Uplad de anexos ORIGINAL
+//####################################################
+// Configuração principal:
+// ALLOW_MULTIPLE = true;  // aceita vários arquivos
+// ALLOW_MULTIPLE = false; // aceita apenas um arquivo
+const ALLOW_MULTIPLE = false;
 
-    /* Implementação do uploader com alternância dinâmica */
-    (function(){
-        const i=document.getElementById('wa-file-input'),
-              d=document.getElementById('wa-dropzone'),
-              p=document.getElementById('wa-preview'),
-              s=document.getElementById('wa-send-btn')||null,
-              c=document.getElementById('wa-clear-btn')||null;
+// =====================================================================
+// Limites de tamanho (em bytes), devido ao transporte de mensagens
+// =====================================================================
+const LIMITE_MB = 6 * 1024 * 1024,
+LIMITE_VIDEO =      LIMITE_MB, 
+LIMITE_AUDIO =      LIMITE_MB, 
+LIMITE_ARQUIVOS =   LIMITE_MB;
+// =====================================================================
 
-        if(ALLOW_MULTIPLE){i.setAttribute("multiple","");}else{i.removeAttribute("multiple");}
+/* Implementação do uploader com alternância dinâmica */
+(function(){
+    const i=document.getElementById('wa-file-input'),
+          d=document.getElementById('wa-dropzone'),
+          p=document.getElementById('wa-preview'),
+          ws=document.querySelector('#waStatus')||null,
+          s=document.getElementById('wa-send-btn')||null,
+          c=document.getElementById('wa-clear-btn')||null;
 
-        let f=[];
+    if(ALLOW_MULTIPLE){i.setAttribute("multiple","");}else{i.removeAttribute("multiple");}
 
-        const reg=l=>{f=!ALLOW_MULTIPLE?[l[0]]:[...f,...Array.from(l)]; rend();};
+    let f=[];
 
-        const rend=()=>{
-            if(!f.length){
-                p.style='display:none;';
-                p.innerHTML='<div class="wa-empty">Nenhum arquivo selecionado</div>';
-                /*limpar anexos*/ enviarRequest("POST",{act:"down"});
-                return;
+    const reg=l=>{
+        const arr=Array.from(l);
+        for(const arq of arr){
+            const t=arq.type||'';
+
+            // --------------------------------------------------------
+            // Valida limites de tamanho
+            // --------------------------------------------------------
+            if(t.startsWith('video/')){
+                if(arq.size>LIMITE_VIDEO){ if(ws){ws.innerHTML='<SPAN style="color:#FFC000;">Vídeo excede 6MB</SPAN>'; console.log(`%cErro: Vídeo excede 6MB\n`, "color:#FFC000; font-weight:bold;"); setTimeout(()=>{c.innerText='Limpar';},3000);} continue; }
             }
-            p.innerHTML='';
-            f.forEach((x,k)=>{
-                const t=x.type||'';
-                if(t.startsWith('image/')||t.startsWith('video/')||t.startsWith('audio/')){
-                    const w=document.createElement('div'); w.className='wa-thumb';
-                    const r=document.createElement('button'); r.className='wa-remove'; r.innerText='✕'; r.onclick=()=>{f.splice(k,1); rend();};
-                    if(t.startsWith('video/')){
-                        const v=document.createElement('video'); v.controls=true; v.src=URL.createObjectURL(x); w.appendChild(v);
-                    }else if(t.startsWith('image/')){
-                        const m=document.createElement('img'); m.src=URL.createObjectURL(x); w.appendChild(m);
-                    }else{
-                        const tx=document.createElement('div'); tx.className='wa-file-meta'; tx.innerText=x.name; w.appendChild(tx);
-                    }
-                    w.appendChild(r); p.appendChild(w); p.style='display:flex;'; return;
+            else if(t.startsWith('audio/')){
+                if(arq.size>LIMITE_AUDIO){ if(ws){ws.innerHTML='<SPAN style="color:#FFC000;">Áudio excede 6MB</SPAN>'; console.log(`%cErro: Áudio excede 6MB\n`, "color:#FFC000; font-weight:bold;"); setTimeout(()=>{c.innerText='Limpar';},3000);} continue; }
+            }
+            else{
+                if(arq.size>LIMITE_ARQUIVOS){ if(ws){ws.innerHTML='<SPAN style="color:#FFC000;">Arquivo excede 6MB</SPAN>'; console.log(`%cErro: Arquivo excede 6MB\n`, "color:#FFC000; font-weight:bold;"); setTimeout(()=>{c.innerText='Limpar';},3000);} continue; }
+            }
+
+            // --------------------------------------------------------
+            // Adiciona (respeita modo single/multiple)
+            // --------------------------------------------------------
+            if(!ALLOW_MULTIPLE){ f=[arq]; break; } else { f.push(arq); }
+        }
+        rend();
+    };
+
+    const rend=()=>{
+        p.innerHTML='';
+        if(!f.length){
+            p.style='display:none;';
+            p.innerHTML='<div class="wa-empty">Nenhum arquivo selecionado</div>';
+            enviarRequest("POST",{act:"down"});
+            return;
+        }
+
+        p.style='display:flex;';
+        if(ws){ws.innerHTML='<SPAN style="color:#BFBFBF;">Pronto</SPAN>';}
+
+        f.forEach((x,k)=>{
+            const t=x.type||'', blob=URL.createObjectURL(x);
+
+            // --------------------------------------------------------
+            // MIDIA
+            // --------------------------------------------------------
+            if(t.startsWith('image/')||t.startsWith('video/')||t.startsWith('audio/')){
+                const w=document.createElement('div'); w.className='wa-thumb';
+                const r=document.createElement('button'); r.className='wa-remove'; r.innerText='✕'; r.title=' Remover '; r.onclick=()=>{f.splice(k,1); rend();};
+
+                if(t.startsWith('video/')){
+                    const v=document.createElement('video'); v.controls=true; v.src=blob; v.style.maxWidth='100%'; v.style.maxHeight='140px'; 
+                    w.appendChild(v); w.style='width:250px; height:150px;'; r.style='top:-60px;';
+                }
+                else if(t.startsWith('audio/')){
+                    const a=document.createElement('audio'); a.controls=true; a.src=blob; a.style.width='100%';
+                    w.appendChild(a); w.style='width:300px; height:80px;'; r.style='margin-right:-12px; margin-top:-12px;';
+                }
+                else{
+                    const m=document.createElement('img'); m.src=blob; m.style.maxWidth='auto'; m.style.maxHeight='100%'; w.appendChild(m);
                 }
 
-                const dc=document.createElement('div'); dc.className='wa-doc';
-                const ic=document.createElement('div'); ic.className='wa-doc-icon'; ic.innerText=x.name.split('.').pop().toUpperCase();
-                const mt=document.createElement('div'); mt.className='wa-file-meta';
-                const nm=document.createElement('div'); nm.className='wa-doc-name'; nm.innerText=x.name;
-                const sz=document.createElement('div'); sz.style.fontSize='12px'; sz.style.color='#94A3B8'; sz.innerText=((x.size/1024)|0)+' KB';
-                const rm=document.createElement('button'); rm.className='wa-remove'; rm.innerText='✕'; rm.onclick=()=>{f.splice(k,1); rend();};
-                mt.appendChild(nm); mt.appendChild(sz); dc.appendChild(ic); dc.appendChild(mt); dc.appendChild(rm); p.appendChild(dc);
-            });
-        };
-
-
-        /* Necessário converter arquivos para Base64 para enviar via extension messaging */
-        async function filesToBase64Array(files){
-            const out=[];
-            for(const fl of files){
-                const buf=await fl.arrayBuffer();
-                const bin=new Uint8Array(buf);
-                let b64='';
-                for(let i=0;i<bin.length;i++){b64+=String.fromCharCode(bin[i]);}
-                out.push({
-                    name:fl.name,
-                    type:fl.type,
-                    size:fl.size,
-                    base64:btoa(b64)
-                });
-            }
-            return out;
-        }
-
-
-        async function enviarArquivos(){
-            if(!f.length){
-                c.innerText='Nenhum arquivo para enviar.'; setTimeout(()=>{c.innerText='Limpar';},5000);
-                return;
+                w.appendChild(r); p.appendChild(w); return;
             }
 
-            try{
-                if(s){s.disabled=true; s.innerText='Enviando...';}
+            // --------------------------------------------------------
+            // DOCUMENTOS
+            // --------------------------------------------------------
+            const dc=document.createElement('div'); dc.className='wa-doc';
+            const ic=document.createElement('div'); ic.className='wa-doc-icon'; ic.innerText=x.name.split('.').pop().toUpperCase();
 
-                const arquivosBase64=await filesToBase64Array(f);
+            const mt=document.createElement('div'); mt.className='wa-file-meta';
+            const nm=document.createElement('div'); nm.className='wa-doc-name'; nm.innerText=x.name;
+            const sz=document.createElement('div'); sz.style.fontSize='12px'; sz.style.color='#94A3B8'; sz.innerText=((x.size/1024)|0)+' KB';
 
-                const r=await enviarRequest("POST",{
-                    act:"up",
-                    arquivos:arquivosBase64,
-                    multiple:ALLOW_MULTIPLE
-                });
+            const rm=document.createElement('button'); rm.className='wa-remove'; rm.innerText=' ✕ '; rm.style='margin-right:-15px;'; rm.title=' Remover '; rm.onclick=()=>{f.splice(k,1); rend();};
 
-                f=[]; if(s){s.innerText='Enviado';}
-
-            }catch(er){
-                c.innerText='Erro ao enviar: '+er.message; setTimeout(()=>{c.innerText='Limpar';},15000);
-            }finally{
-                if(s){s.disabled=false; setTimeout(()=>s.innerText='Enviar',800);}
-            }
-        }
-
-
-        d.addEventListener('click',()=>i.click());
-        i.addEventListener('change',e=>{ if(!e.target.files.length){return;} reg(e.target.files); i.value=''; });
-        ['dragenter','dragover'].forEach(v=>d.addEventListener(v,e=>{e.preventDefault(); e.stopPropagation(); d.style.borderColor='#25D366';}));
-        ['dragleave','drop'].forEach(v=>d.addEventListener(v,e=>{ e.preventDefault(); e.stopPropagation(); d.style.borderColor=''; }));
-
-        d.addEventListener('drop',async e=>{
-            reg(e.dataTransfer.files);
-            await enviarArquivos();
+            mt.appendChild(nm); mt.appendChild(sz); dc.appendChild(ic); dc.appendChild(mt); dc.appendChild(rm); p.appendChild(dc);
         });
+    };
 
-        if(c){c.addEventListener('click',()=>{f=[]; rend(); c.innerText='Limpar';});}
+    async function filesToBase64Array(files){
+        const out=[];
+        for(const fl of files){
+            const buf=await fl.arrayBuffer(), bin=new Uint8Array(buf);
+            let b64=''; for(let i=0;i<bin.length;i++){b64+=String.fromCharCode(bin[i]);}
+            out.push({name:fl.name,type:fl.type,size:fl.size,base64:btoa(b64)});
+        }
+        return out;
+    }
 
-        if(s){s.addEventListener('click',async()=>{await enviarArquivos();});}
+    async function enviarArquivos(){
+        if(!f.length){ if(c){c.innerText='Nenhum arquivo para enviar.'; setTimeout(()=>{c.innerText='Limpar';},5000);} return; }
 
-        i.addEventListener('change',async()=>{await enviarArquivos();});
+        try{
+            if(s){s.disabled=true; s.innerText='Enviando...';}
+            const arquivosBase64=await filesToBase64Array(f);
+            const r=await enviarRequest("POST",{act:"up",arquivos:arquivosBase64,multiple:ALLOW_MULTIPLE});
+            f=[]; if(s){s.innerText='Enviado';}
+        }
+        catch(er){
+            if(c){c.innerText='Erro ao enviar: '+er.message; setTimeout(()=>{c.innerText='Limpar';},15000);}
+        }
+        finally{
+            if(s){s.disabled=false; setTimeout(()=>s.innerText='Enviar',800);}
+        }
+    }
 
-        rend();
-    })();
-  //####################################################
-  //####################################################
+    d.addEventListener('click',()=>i.click());
+    i.addEventListener('change',e=>{ if(!e.target.files.length){return;} d.style.borderColor='#25D366'; reg(e.target.files); setTimeout(()=>d.style.borderColor='',150); i.value=''; });
+    ['dragenter','dragover'].forEach(v=>d.addEventListener(v,e=>{e.preventDefault(); e.stopPropagation(); d.style.borderColor='#25D366';}));
+    ['dragleave','drop'].forEach(v=>d.addEventListener(v,e=>{e.preventDefault(); e.stopPropagation(); d.style.borderColor='';}));
+
+    d.addEventListener('drop',async e=>{ reg(e.dataTransfer.files); await enviarArquivos(); });
+
+    if(c){c.addEventListener('click',()=>{f=[]; rend(); c.innerText='Limpar';});}
+    if(s){s.addEventListener('click',async()=>{await enviarArquivos();});}
+    i.addEventListener('change',async()=>{await enviarArquivos();});
+
+    rend();
+})();
+//####################################################
+//####################################################
+
+
 
   document.getElementById('waCloseBtn').onclick=()=>overlay.style.display='none';
   let abortFlag={stop:false};
