@@ -215,7 +215,7 @@ function writeAguardandoStyled(){
               <SPAN style="font-size:10px;" class="selectable-text copyable-text" > ${usuario['num']} - ${usuario['key']} </SPAN>
             </h2>
             😊 Tudo pronto!
-            Seus pedidos serão impressos em:  <SPAN style="color:#FFFFFF;">`+(firstPrint || PRINT_POS)+`</SPAN>
+            Seus pedidos serão impressos em:  <SPAN style="color:#FFFFFF; white-space:nowrap;">`+(firstPrint || PRINT_POS)+`</SPAN>
 
             <SPAN style="color:#FFFFFF;background:#0066CC;padding:6px 10px;border:solid 1px #FFFFFF30;border-radius:4px;font-weight:700; max-width:95%;margin:20px;"> ${AGUARDANDO_PEDIDOS} </SPAN>
 
